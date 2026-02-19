@@ -5,19 +5,10 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
 
-const skills = [
-  { name: "TypeScript", level: 9 },
-  { name: "React", level: 9 },
-  { name: "Next.js", level: 8 },
-  { name: "Node.js", level: 8 },
-  { name: "Express", level: 8 },
-  { name: "Electron", level: 7 },
-  { name: "Tailwind CSS", level: 9 },
-  { name: "PostgreSQL", level: 7 },
-  { name: "SQLite", level: 7 },
-  { name: "Docker", level: 6 },
-  { name: "Python", level: 5 },
-];
+interface AboutProps {
+  description: string;
+  skills: { name: string; level: number }[];
+}
 
 function DotMatrix({ level, index }: { level: number; index: number }) {
   const total = 10;
@@ -42,7 +33,7 @@ function DotMatrix({ level, index }: { level: number; index: number }) {
   );
 }
 
-export default function AboutSection() {
+export default function AboutSection({ description, skills }: AboutProps) {
   const t = useTranslations("about");
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
@@ -50,7 +41,6 @@ export default function AboutSection() {
   return (
     <section id="about" className="relative py-32 px-6" ref={ref}>
       <div className="max-w-6xl mx-auto">
-        {/* Section heading — offset to the left */}
         <motion.div
           variants={fadeInUp}
           initial="hidden"
@@ -66,7 +56,6 @@ export default function AboutSection() {
         </motion.div>
 
         <div className="grid md:grid-cols-5 gap-16 md:gap-20">
-          {/* Left: Description — takes 3 cols */}
           <motion.div
             variants={fadeInUp}
             initial="hidden"
@@ -74,11 +63,10 @@ export default function AboutSection() {
             className="md:col-span-3"
           >
             <p className="text-white/60 text-base md:text-lg leading-[1.9] font-light">
-              {t("description")}
+              {description}
             </p>
           </motion.div>
 
-          {/* Right: Skills dot matrix — takes 2 cols */}
           <motion.div
             variants={staggerContainer}
             initial="hidden"
@@ -106,7 +94,6 @@ export default function AboutSection() {
         </div>
       </div>
 
-      {/* Decorative line */}
       <div className="absolute left-6 md:left-12 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-white/5 to-transparent" />
     </section>
   );

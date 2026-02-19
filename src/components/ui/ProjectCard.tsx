@@ -1,13 +1,22 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { ExternalLink, Github } from "lucide-react";
-import type { Project } from "@/lib/projects";
 
-export default function ProjectCard({ project }: { project: Project }) {
-  const locale = useLocale() as "ja" | "en";
+export interface ProjectFlat {
+  id: string;
+  title: string;
+  description: string;
+  tech: string[];
+  category: string;
+  github: string;
+  demo: string;
+  featured: boolean;
+}
+
+export default function ProjectCard({ project }: { project: ProjectFlat }) {
   const t = useTranslations("projects");
   const cardRef = useRef<HTMLDivElement>(null);
   const [rotate, setRotate] = useState({ x: 0, y: 0 });
@@ -45,7 +54,7 @@ export default function ProjectCard({ project }: { project: Project }) {
         <div
           className="w-full h-full flex items-center justify-center text-white/10"
           dangerouslySetInnerHTML={{
-            __html: generateProjectSVG(project.id, project.title.en),
+            __html: generateProjectSVG(project.id, project.title),
           }}
         />
         {/* Hover overlay */}
@@ -82,10 +91,10 @@ export default function ProjectCard({ project }: { project: Project }) {
       {/* Content */}
       <div className="p-5">
         <h4 className="font-bold text-base mb-2 tracking-tight">
-          {project.title[locale]}
+          {project.title}
         </h4>
         <p className="text-white/40 text-sm leading-relaxed mb-4 line-clamp-2">
-          {project.description[locale]}
+          {project.description}
         </p>
         <div className="flex flex-wrap gap-1.5">
           {project.tech.map((t) => (
@@ -103,7 +112,6 @@ export default function ProjectCard({ project }: { project: Project }) {
 }
 
 function generateProjectSVG(id: string, title: string): string {
-  // Generate unique-looking mockup for each project
   const colors: Record<string, string> = {
     devcheck: "#1a1a2e",
     "stock-battle-game": "#0a1628",
@@ -119,17 +127,14 @@ function generateProjectSVG(id: string, title: string): string {
 
   return `<svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
     <rect width="400" height="250" fill="${bg}"/>
-    <!-- Window chrome -->
     <rect x="20" y="20" width="360" height="210" rx="8" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
     <circle cx="40" cy="36" r="4" fill="rgba(255,255,255,0.1)"/>
     <circle cx="54" cy="36" r="4" fill="rgba(255,255,255,0.1)"/>
     <circle cx="68" cy="36" r="4" fill="rgba(255,255,255,0.1)"/>
     <line x1="20" y1="48" x2="380" y2="48" stroke="rgba(255,255,255,0.05)"/>
-    <!-- Abstract UI elements -->
     <rect x="36" y="64" width="80" height="8" rx="4" fill="rgba(255,255,255,0.12)"/>
     <rect x="36" y="84" width="140" height="6" rx="3" fill="rgba(255,255,255,0.06)"/>
     <rect x="36" y="100" width="120" height="6" rx="3" fill="rgba(255,255,255,0.04)"/>
-    <!-- Decorative blocks -->
     <rect x="36" y="124" width="100" height="80" rx="6" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>
     <rect x="150" y="124" width="100" height="80" rx="6" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>
     <rect x="264" y="124" width="100" height="80" rx="6" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>

@@ -11,9 +11,11 @@ import {
   FileText,
   PenTool,
   Edit3,
+  Settings,
 } from "lucide-react";
 import Link from "next/link";
 import type { OutputData } from "@editorjs/editorjs";
+import SiteConfigEditor from "./SiteConfigEditor";
 
 const BlogEditor = dynamic(
   () => import("@/components/editor/BlogEditor"),
@@ -36,6 +38,7 @@ export default function AdminPage() {
   const [authed, setAuthed] = useState(false);
   const [posts, setPosts] = useState<PostMeta[]>([]);
   const [editing, setEditing] = useState(false);
+  const [activeTab, setActiveTab] = useState<"blog" | "config">("blog");
 
   // Editor state
   const [slug, setSlug] = useState("");
@@ -352,25 +355,60 @@ export default function AdminPage() {
     );
   }
 
-  // === Post list ===
+  // === Main dashboard ===
   return (
     <div className="min-h-screen pt-24 pb-20 px-6">
       <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-between mb-10">
+        {/* Header + Tabs */}
+        <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <FileText size={18} className="text-white/30" />
-            <h1 className="text-xl font-bold tracking-tight">記事管理</h1>
-            <span className="text-[10px] text-white/15 bg-white/[0.03] px-2 py-0.5 rounded-full">
-              {posts.length}件
-            </span>
+            <PenTool size={18} className="text-white/30" />
+            <h1 className="text-xl font-bold tracking-tight">管理画面</h1>
           </div>
-          <div className="flex items-center gap-3">
-            <Link
-              href="/"
-              className="text-xs text-white/30 hover:text-white/60 transition-colors"
-            >
-              サイトに戻る
-            </Link>
+          <Link
+            href="/"
+            className="text-xs text-white/30 hover:text-white/60 transition-colors"
+          >
+            サイトに戻る
+          </Link>
+        </div>
+
+        {/* Tab switcher */}
+        <div className="flex gap-1 mb-8 border-b border-white/[0.06]">
+          <button
+            onClick={() => setActiveTab("blog")}
+            className={`flex items-center gap-2 px-4 py-2.5 text-xs tracking-wide transition-colors border-b-2 -mb-px ${
+              activeTab === "blog"
+                ? "border-white/40 text-white"
+                : "border-transparent text-white/30 hover:text-white/60"
+            }`}
+          >
+            <FileText size={14} />
+            ブログ管理
+            <span className="text-[10px] text-white/15 bg-white/[0.03] px-1.5 py-0.5 rounded-full">
+              {posts.length}
+            </span>
+          </button>
+          <button
+            onClick={() => setActiveTab("config")}
+            className={`flex items-center gap-2 px-4 py-2.5 text-xs tracking-wide transition-colors border-b-2 -mb-px ${
+              activeTab === "config"
+                ? "border-white/40 text-white"
+                : "border-transparent text-white/30 hover:text-white/60"
+            }`}
+          >
+            <Settings size={14} />
+            サイト設定
+          </button>
+        </div>
+
+        {/* Site config tab */}
+        {activeTab === "config" && <SiteConfigEditor password={password} />}
+
+        {/* Blog tab */}
+        {activeTab === "blog" && (
+        <>
+        <div className="flex items-center justify-end mb-6">
             <button
               onClick={newPost}
               className="flex items-center gap-1.5 bg-white text-black px-4 py-2 rounded-lg text-xs font-medium hover:bg-white/90 transition-colors"
@@ -378,7 +416,6 @@ export default function AdminPage() {
               <Plus size={13} />
               新しい記事
             </button>
-          </div>
         </div>
 
         {message && (
@@ -472,6 +509,8 @@ export default function AdminPage() {
             </li>
           </ul>
         </div>
+        </>
+        )}
       </div>
     </div>
   );

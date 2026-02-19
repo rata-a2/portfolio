@@ -4,19 +4,20 @@ import { useState, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { motion, useInView } from "framer-motion";
 import { fadeInUp, staggerContainer, scaleIn } from "@/lib/animations";
-import { projects, type ProjectCategory } from "@/lib/projects";
-import ProjectCard from "@/components/ui/ProjectCard";
+import ProjectCard, { type ProjectFlat } from "@/components/ui/ProjectCard";
 
-const filters: { key: "all" | ProjectCategory; label: string }[] = [
+type CategoryFilter = "all" | "webapp" | "desktop" | "extension";
+
+const filters: { key: CategoryFilter; label: string }[] = [
   { key: "all", label: "all" },
   { key: "webapp", label: "webapp" },
   { key: "desktop", label: "desktop" },
   { key: "extension", label: "extension" },
 ];
 
-export default function ProjectsSection() {
+export default function ProjectsSection({ projects }: { projects: ProjectFlat[] }) {
   const t = useTranslations("projects");
-  const [active, setActive] = useState<"all" | ProjectCategory>("all");
+  const [active, setActive] = useState<CategoryFilter>("all");
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-80px" });
 
@@ -28,7 +29,6 @@ export default function ProjectsSection() {
   return (
     <section id="projects" className="relative py-32 px-6" ref={ref}>
       <div className="max-w-6xl mx-auto">
-        {/* Heading */}
         <motion.div
           variants={fadeInUp}
           initial="hidden"
@@ -43,7 +43,6 @@ export default function ProjectsSection() {
           </h3>
         </motion.div>
 
-        {/* Filters */}
         <motion.div
           variants={fadeInUp}
           initial="hidden"
@@ -65,7 +64,6 @@ export default function ProjectsSection() {
           ))}
         </motion.div>
 
-        {/* Grid */}
         <motion.div
           variants={staggerContainer}
           initial="hidden"
