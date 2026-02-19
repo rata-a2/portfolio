@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
-import { getPostBySlug, getAllPosts } from "@/lib/blog";
-import { MDXRemote } from "next-mdx-remote/rsc";
+import { getPostBySlug, getAllPosts, renderBlocks } from "@/lib/blog";
 import BlogPostClient from "./BlogPostClient";
 
 interface Props {
@@ -28,9 +27,7 @@ export default async function BlogPostPage({ params }: Props) {
 
   if (!post) notFound();
 
-  return (
-    <BlogPostClient post={post}>
-      <MDXRemote source={post.content} />
-    </BlogPostClient>
-  );
+  const html = renderBlocks(post.blocks);
+
+  return <BlogPostClient post={post} contentHtml={html} />;
 }

@@ -5,15 +5,14 @@ import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { fadeInUp } from "@/lib/animations";
-import type { BlogPost } from "@/lib/blog";
-import type { ReactNode } from "react";
+import type { BlogPostMeta } from "@/lib/blog";
 
 export default function BlogPostClient({
   post,
-  children,
+  contentHtml,
 }: {
-  post: BlogPost;
-  children: ReactNode;
+  post: BlogPostMeta;
+  contentHtml: string;
 }) {
   const t = useTranslations("blog");
 
@@ -59,7 +58,10 @@ export default function BlogPostClient({
           </header>
 
           {/* Content */}
-          <article className="prose-custom">{children}</article>
+          <article
+            className="prose-custom"
+            dangerouslySetInnerHTML={{ __html: contentHtml }}
+          />
         </motion.div>
       </div>
     </div>

@@ -1,0 +1,49 @@
+{
+  "title": "TypeScriptを選ぶ理由 — 型があると夜ぐっすり眠れる",
+  "description": "JavaScriptからTypeScriptに移行して変わったこと、変わらなかったこと。",
+  "date": "2026-02-10",
+  "tags": ["TypeScript", "JavaScript", "雑記"],
+  "locale": "ja",
+  "blocks": [
+    {
+      "type": "header",
+      "data": { "text": "JavaScriptが嫌いなわけじゃない", "level": 2 }
+    },
+    {
+      "type": "paragraph",
+      "data": { "text": "誤解しないでほしい。JavaScriptは好きだ。プロトタイプを爆速で作れるし、エコシステムは巨大だし、ブラウザでもサーバーでも動く。" }
+    },
+    {
+      "type": "paragraph",
+      "data": { "text": "でもTypeScriptを使い始めてから、もう戻れなくなった。" }
+    },
+    {
+      "type": "header",
+      "data": { "text": "型は制約じゃなくてドキュメント", "level": 2 }
+    },
+    {
+      "type": "paragraph",
+      "data": { "text": "<code>any</code>を使わない縛りで書くと、関数の引数と返り値が自動的にドキュメントになる。半年後の自分が読んでも「あ、これはこういうデータ構造ね」とすぐ分かる。" }
+    },
+    {
+      "type": "code",
+      "data": { "code": "// これだけで何をする関数か分かる\nfunction calculatePortfolio(\n  holdings: StockHolding[],\n  prices: Map<string, number>\n): PortfolioSummary {\n  // ...\n}" }
+    },
+    {
+      "type": "header",
+      "data": { "text": "Zodと組み合わせると最強", "level": 2 }
+    },
+    {
+      "type": "paragraph",
+      "data": { "text": "フロントとバックエンドでスキーマを共有できる。APIのレスポンスをパースするときに型安全が保証されるのは、精神衛生上とても良い。" }
+    },
+    {
+      "type": "header",
+      "data": { "text": "結論", "level": 2 }
+    },
+    {
+      "type": "paragraph",
+      "data": { "text": "型を書く手間は、デバッグにかかる時間の10分の1以下。投資対効果は抜群。" }
+    }
+  ]
+}

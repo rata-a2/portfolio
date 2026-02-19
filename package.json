@@ -9,12 +9,18 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@editorjs/code": "^2.9.4",
+    "@editorjs/delimiter": "^1.4.2",
+    "@editorjs/editorjs": "^2.31.3",
+    "@editorjs/header": "^2.8.8",
+    "@editorjs/inline-code": "^1.5.2",
+    "@editorjs/list": "^2.0.9",
+    "@editorjs/marker": "^1.4.0",
+    "@editorjs/quote": "^2.7.6",
     "framer-motion": "^12.34.0",
-    "gray-matter": "^4.0.3",
     "lucide-react": "^0.571.0",
     "next": "16.1.6",
     "next-intl": "^4.8.3",
-    "next-mdx-remote": "^6.0.0",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },

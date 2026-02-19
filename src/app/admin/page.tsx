@@ -1,18 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import dynamic from "next/dynamic";
 import {
   Save,
   Trash2,
   Plus,
   LogIn,
-  Eye,
-  Edit3,
   ArrowLeft,
   FileText,
   PenTool,
+  Edit3,
 } from "lucide-react";
 import Link from "next/link";
+import type { OutputData } from "@editorjs/editorjs";
+
+const BlogEditor = dynamic(
+  () => import("@/components/editor/BlogEditor"),
+  { ssr: false }
+);
 
 interface PostMeta {
   slug: string;
@@ -21,7 +27,8 @@ interface PostMeta {
   date: string;
   tags: string[];
   locale: string;
-  content?: string;
+  sha?: string;
+  blocks?: OutputData["blocks"];
 }
 
 export default function AdminPage() {
@@ -29,7 +36,6 @@ export default function AdminPage() {
   const [authed, setAuthed] = useState(false);
   const [posts, setPosts] = useState<PostMeta[]>([]);
   const [editing, setEditing] = useState(false);
-  const [preview, setPreview] = useState(false);
 
   // Editor state
   const [slug, setSlug] = useState("");
@@ -38,8 +44,10 @@ export default function AdminPage() {
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [tags, setTags] = useState("");
   const [locale, setLocale] = useState("ja");
-  const [content, setContent] = useState("");
+  const [editorData, setEditorData] = useState<OutputData | null>(null);
   const [isExisting, setIsExisting] = useState(false);
+  const [existingSha, setExistingSha] = useState<string | undefined>();
+  const [editorKey, setEditorKey] = useState(0);
 
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
@@ -81,15 +89,15 @@ export default function AdminPage() {
     setDate(new Date().toISOString().slice(0, 10));
     setTags("");
     setLocale("ja");
-    setContent("");
+    setEditorData(null);
     setIsExisting(false);
+    setExistingSha(undefined);
+    setEditorKey((k) => k + 1);
     setEditing(true);
-    setPreview(false);
     setMessage("");
   };
 
   const editPost = async (post: PostMeta) => {
-    // Fetch full content including body
     try {
       const res = await fetch(`/api/admin/posts?slug=${post.slug}`, {
         headers,
@@ -102,10 +110,12 @@ export default function AdminPage() {
         setDate(full.date);
         setTags(full.tags?.join(", ") || "");
         setLocale(full.locale || "ja");
-        setContent(full.content || "");
+        setExistingSha(full.sha);
+        const blocks = full.blocks || [];
+        setEditorData({ time: Date.now(), blocks, version: "2.28.0" });
+        setEditorKey((k) => k + 1);
         setIsExisting(true);
         setEditing(true);
-        setPreview(false);
         setMessage("");
       }
     } catch {
@@ -113,9 +123,13 @@ export default function AdminPage() {
     }
   };
 
+  const handleEditorChange = useCallback((data: OutputData) => {
+    setEditorData(data);
+  }, []);
+
   const savePost = async () => {
-    if (!slug || !title || !content) {
-      setMessage("スラグ、タイトル、本文は必須です");
+    if (!slug || !title) {
+      setMessage("スラグとタイトルは必須です");
       return;
     }
 
@@ -136,16 +150,18 @@ export default function AdminPage() {
             .map((t) => t.trim())
             .filter(Boolean),
           locale,
-          content,
+          blocks: editorData?.blocks || [],
+          sha: existingSha,
         }),
       });
 
       if (res.ok) {
-        setMessage("✓ 保存しました");
+        setMessage("保存しました（GitHubにコミット済み）");
         await fetchPosts();
         setEditing(false);
       } else {
-        setMessage("保存に失敗しました");
+        const err = await res.json();
+        setMessage(`保存に失敗: ${err.error || "不明なエラー"}`);
       }
     } catch {
       setMessage("エラーが発生しました");
@@ -154,17 +170,22 @@ export default function AdminPage() {
     }
   };
 
-  const removePost = async (postSlug: string) => {
-    if (!confirm(`「${postSlug}」を削除しますか？`)) return;
+  const removePost = async (post: PostMeta) => {
+    if (!confirm(`「${post.title}」を削除しますか？`)) return;
 
-    const res = await fetch(`/api/admin/posts?slug=${postSlug}`, {
-      method: "DELETE",
-      headers,
-    });
+    const res = await fetch(
+      `/api/admin/posts?slug=${post.slug}&sha=${post.sha}`,
+      {
+        method: "DELETE",
+        headers,
+      }
+    );
 
     if (res.ok) {
       setMessage("削除しました");
       await fetchPosts();
+    } else {
+      setMessage("削除に失敗しました");
     }
   };
 
@@ -234,140 +255,98 @@ export default function AdminPage() {
                 {isExisting ? "記事を編集" : "新しい記事を作成"}
               </h1>
             </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setPreview(!preview)}
-                className="flex items-center gap-1.5 text-xs text-white/40 hover:text-white border border-white/10 px-3 py-2 rounded-lg transition-colors"
-              >
-                <Eye size={13} />
-                {preview ? "編集に戻る" : "プレビュー"}
-              </button>
-              <button
-                onClick={savePost}
-                disabled={saving}
-                className="flex items-center gap-1.5 bg-white text-black px-4 py-2 rounded-lg text-xs font-medium hover:bg-white/90 transition-colors disabled:opacity-50"
-              >
-                <Save size={13} />
-                {saving ? "保存中..." : "保存する"}
-              </button>
-            </div>
+            <button
+              onClick={savePost}
+              disabled={saving}
+              className="flex items-center gap-1.5 bg-white text-black px-4 py-2 rounded-lg text-xs font-medium hover:bg-white/90 transition-colors disabled:opacity-50"
+            >
+              <Save size={13} />
+              {saving ? "保存中..." : "保存する"}
+            </button>
           </div>
 
           {message && (
             <p
-              className={`text-xs mb-4 ${message.startsWith("✓") ? "text-green-400/70" : "text-red-400/70"}`}
+              className={`text-xs mb-4 ${message.includes("保存しました") ? "text-green-400/70" : "text-red-400/70"}`}
             >
               {message}
             </p>
           )}
 
-          {!preview ? (
-            <div className="space-y-5">
-              <div className="grid grid-cols-2 gap-4">
-                <InputField
-                  label="スラグ（URL）"
-                  value={slug}
-                  onChange={(v) =>
-                    setSlug(v.toLowerCase().replace(/[^a-z0-9-]/g, "-"))
-                  }
-                  placeholder="my-post-slug"
-                  mono
-                  disabled={isExisting}
-                />
-                <InputField
-                  label="日付"
-                  value={date}
-                  onChange={setDate}
-                  type="date"
-                />
-              </div>
-
+          <div className="space-y-5">
+            <div className="grid grid-cols-2 gap-4">
               <InputField
-                label="タイトル"
-                value={title}
-                onChange={setTitle}
-                placeholder="記事のタイトル"
+                label="スラグ（URL）"
+                value={slug}
+                onChange={(v) =>
+                  setSlug(v.toLowerCase().replace(/[^a-z0-9-]/g, "-"))
+                }
+                placeholder="my-post-slug"
+                mono
+                disabled={isExisting}
               />
-
               <InputField
-                label="説明文"
-                value={description}
-                onChange={setDescription}
-                placeholder="記事の概要（一覧やOGPに表示）"
+                label="日付"
+                value={date}
+                onChange={setDate}
+                type="date"
               />
+            </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <InputField
-                  label="タグ（カンマ区切り）"
-                  value={tags}
-                  onChange={setTags}
-                  placeholder="TypeScript, React"
-                />
-                <div>
-                  <label className="block text-[10px] text-white/30 uppercase tracking-wider mb-1.5">
-                    言語
-                  </label>
-                  <select
-                    value={locale}
-                    onChange={(e) => setLocale(e.target.value)}
-                    className="w-full bg-white/[0.03] border border-white/[0.08] rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-white/20 transition-colors"
-                  >
-                    <option value="ja" className="bg-black">
-                      日本語
-                    </option>
-                    <option value="en" className="bg-black">
-                      English
-                    </option>
-                  </select>
-                </div>
-              </div>
+            <InputField
+              label="タイトル"
+              value={title}
+              onChange={setTitle}
+              placeholder="記事のタイトル"
+            />
 
+            <InputField
+              label="説明文"
+              value={description}
+              onChange={setDescription}
+              placeholder="記事の概要（一覧やOGPに表示）"
+            />
+
+            <div className="grid grid-cols-2 gap-4">
+              <InputField
+                label="タグ（カンマ区切り）"
+                value={tags}
+                onChange={setTags}
+                placeholder="TypeScript, React"
+              />
               <div>
                 <label className="block text-[10px] text-white/30 uppercase tracking-wider mb-1.5">
-                  本文（Markdown）
+                  言語
                 </label>
-                <textarea
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  placeholder={`## 見出し\n\n本文をここに書きます...\n\n### 小見出し\n\n- リスト項目\n- リスト項目`}
-                  rows={24}
-                  className="w-full bg-white/[0.03] border border-white/[0.08] rounded-lg px-4 py-3 text-sm text-white placeholder:text-white/15 focus:outline-none focus:border-white/20 font-mono leading-relaxed resize-y transition-colors"
-                />
-                <p className="text-[10px] text-white/15 mt-1.5">
-                  Markdown記法が使えます。## で見出し、** で太字、```
-                  でコードブロック
-                </p>
+                <select
+                  value={locale}
+                  onChange={(e) => setLocale(e.target.value)}
+                  className="w-full bg-white/[0.03] border border-white/[0.08] rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-white/20 transition-colors"
+                >
+                  <option value="ja" className="bg-black">
+                    日本語
+                  </option>
+                  <option value="en" className="bg-black">
+                    English
+                  </option>
+                </select>
               </div>
             </div>
-          ) : (
-            <div className="border border-white/[0.06] rounded-lg p-8 bg-white/[0.01]">
-              <div className="flex items-center gap-3 mb-4">
-                <time className="text-[10px] text-white/20 font-mono">
-                  {date}
-                </time>
-                {tags
-                  .split(",")
-                  .filter(Boolean)
-                  .map((tag) => (
-                    <span
-                      key={tag.trim()}
-                      className="text-[10px] text-white/25 border border-white/[0.06] px-2 py-0.5 rounded-full"
-                    >
-                      {tag.trim()}
-                    </span>
-                  ))}
-              </div>
-              <h1 className="text-2xl font-bold tracking-tight mb-4">
-                {title || "タイトル未設定"}
-              </h1>
-              {description && (
-                <p className="text-white/40 text-sm mb-8">{description}</p>
-              )}
-              <div className="prose-custom whitespace-pre-wrap text-white/50 text-sm leading-relaxed">
-                {content || "本文を入力してください"}
-              </div>
+
+            <div>
+              <label className="block text-[10px] text-white/30 uppercase tracking-wider mb-1.5">
+                本文
+              </label>
+              <BlogEditor
+                key={editorKey}
+                data={editorData || undefined}
+                onChange={handleEditorChange}
+              />
+              <p className="text-[10px] text-white/15 mt-1.5">
+                ブロックエディタ: 「/」または「+」でブロックを追加（見出し、リスト、コード、引用など）
+              </p>
             </div>
-          )}
+          </div>
         </div>
       </div>
     );
@@ -412,7 +391,9 @@ export default function AdminPage() {
               <div
                 key={post.slug}
                 className={`flex items-center justify-between px-5 py-4 group hover:bg-white/[0.02] transition-colors ${
-                  i !== posts.length - 1 ? "border-b border-white/[0.04]" : ""
+                  i !== posts.length - 1
+                    ? "border-b border-white/[0.04]"
+                    : ""
                 }`}
               >
                 <div
@@ -427,10 +408,7 @@ export default function AdminPage() {
                       {post.locale.toUpperCase()}
                     </span>
                     {post.tags?.slice(0, 2).map((tag) => (
-                      <span
-                        key={tag}
-                        className="text-[10px] text-white/15"
-                      >
+                      <span key={tag} className="text-[10px] text-white/15">
                         #{tag}
                       </span>
                     ))}
@@ -448,7 +426,7 @@ export default function AdminPage() {
                     <Edit3 size={14} />
                   </button>
                   <button
-                    onClick={() => removePost(post.slug)}
+                    onClick={() => removePost(post)}
                     className="text-white/30 hover:text-red-400 p-2 rounded-md hover:bg-white/[0.04] transition-all"
                     title="削除"
                   >
@@ -481,17 +459,16 @@ export default function AdminPage() {
               • 「新しい記事」→ タイトル・本文を入力して「保存」
             </li>
             <li>
-              • 記事一覧の行をクリックすると既存の記事を編集できます
+              • エディタでは「/」キーまたは左の「+」ボタンでブロックを追加できます
             </li>
             <li>
-              • 記事はMarkdown形式で書けます（## 見出し、** 太字、``` コードブロック）
+              • 見出し、リスト、コードブロック、引用、区切り線が使えます
             </li>
             <li>
-              • 言語を切り替えると、日本語版・英語版の記事を別々に管理できます
+              • テキストを選択すると太字・インラインコード・マーカーなどの装飾ができます
             </li>
             <li>
-              •
-              保存した記事はGitで管理されます。Vercelにデプロイすると自動的に公開されます
+              • 保存すると自動的にGitHubにコミットされ、Vercelが再デプロイします
             </li>
           </ul>
         </div>
@@ -500,7 +477,6 @@ export default function AdminPage() {
   );
 }
 
-// Reusable input field component
 function InputField({
   label,
   value,

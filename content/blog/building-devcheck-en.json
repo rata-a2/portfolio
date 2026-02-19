@@ -1,0 +1,61 @@
+{
+  "title": "Building DevCheck — Creating Developer Tools with Electron & React",
+  "description": "From OGP preview to SMTP testing, how I built 7 verification features into a single Electron app.",
+  "date": "2026-02-15",
+  "tags": ["Electron", "React", "TypeScript"],
+  "locale": "en",
+  "blocks": [
+    {
+      "type": "header",
+      "data": { "text": "Why I Built It", "level": 2 }
+    },
+    {
+      "type": "paragraph",
+      "data": { "text": "When doing web development, there are so many things to check before deployment. Are the OGP tags correct? Will the emails send? Is the performance acceptable? I got tired of opening different tools every time." }
+    },
+    {
+      "type": "paragraph",
+      "data": { "text": "So I figured — why not build an all-in-one tool? That's how DevCheck started." }
+    },
+    {
+      "type": "header",
+      "data": { "text": "Tech Choices", "level": 2 }
+    },
+    {
+      "type": "paragraph",
+      "data": { "text": "I chose Electron because I wanted everything to run locally. No cloud dependency." }
+    },
+    {
+      "type": "list",
+      "data": {
+        "style": "unordered",
+        "items": [
+          "<b>Electron + React + TypeScript</b> — React for UI, TypeScript for type safety",
+          "<b>Vite</b> — Fast HMR even in Electron",
+          "<b>Tailwind CSS</b> — The only styling choice",
+          "<b>Zustand</b> — Lightweight state management"
+        ]
+      }
+    },
+    {
+      "type": "header",
+      "data": { "text": "The Hard Parts", "level": 2 }
+    },
+    {
+      "type": "paragraph",
+      "data": { "text": "The SMTP test server was the trickiest part. I used the Node.js <code>smtp-server</code> package, but getting real-time email display working through Electron's IPC between main and renderer processes took some creative engineering." }
+    },
+    {
+      "type": "paragraph",
+      "data": { "text": "The solution: run the SMTP server in the main process and notify the renderer via IPC on each email received." }
+    },
+    {
+      "type": "header",
+      "data": { "text": "What I Learned", "level": 2 }
+    },
+    {
+      "type": "paragraph",
+      "data": { "text": "\"All-in-one\" tools are fun but scope management matters. I started with 10 features but trimmed down to 7. Shipping beats perfection." }
+    }
+  ]
+}

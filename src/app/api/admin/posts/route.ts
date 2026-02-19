@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAllPosts, createPost, deletePost, getPostBySlug } from "@/lib/blog";
+import {
+  listBlogFiles,
+  getBlogFile,
+  saveBlogFile,
+  deleteBlogFile,
+} from "@/lib/github";
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin";
 
@@ -20,15 +25,41 @@ export async function GET(request: NextRequest) {
   const slug = searchParams.get("slug");
 
   if (slug) {
-    const post = getPostBySlug(slug);
-    if (!post) {
+    const result = await getBlogFile(slug);
+    if (!result) {
       return NextResponse.json({ error: "Post not found" }, { status: 404 });
     }
-    return NextResponse.json(post);
+    return NextResponse.json({
+      slug,
+      sha: result.sha,
+      ...result.data,
+    });
   }
 
-  const posts = getAllPosts();
-  return NextResponse.json(posts);
+  // List all posts
+  const files = await listBlogFiles();
+  const posts = await Promise.all(
+    files.map(async (file) => {
+      const s = file.name.replace(/\.json$/, "");
+      const result = await getBlogFile(s);
+      if (!result) return null;
+      return {
+        slug: s,
+        sha: file.sha,
+        title: result.data.title || "Untitled",
+        description: result.data.description || "",
+        date: result.data.date || "",
+        tags: result.data.tags || [],
+        locale: result.data.locale || "ja",
+      };
+    })
+  );
+
+  const filtered = posts
+    .filter((p) => p !== null)
+    .sort((a, b) => ((a!.date as string) > (b!.date as string) ? -1 : 1));
+
+  return NextResponse.json(filtered);
 }
 
 // POST: Create or update a post
@@ -39,26 +70,31 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { slug, title, description, date, tags, locale, content } = body;
+    const { slug, title, description, date, tags, locale, blocks, sha } = body;
 
-    if (!slug || !title || !content) {
+    if (!slug || !title) {
       return NextResponse.json(
-        { error: "slug, title, and content are required" },
+        { error: "slug and title are required" },
         { status: 400 }
       );
     }
 
-    createPost(
-      slug,
-      {
-        title,
-        description: description || "",
-        date: date || new Date().toISOString().slice(0, 10),
-        tags: tags || [],
-        locale: locale || "ja",
-      },
-      content
-    );
+    const data = {
+      title,
+      description: description || "",
+      date: date || new Date().toISOString().slice(0, 10),
+      tags: tags || [],
+      locale: locale || "ja",
+      blocks: blocks || [],
+    };
+
+    const success = await saveBlogFile(slug, data, sha || undefined);
+    if (!success) {
+      return NextResponse.json(
+        { error: "Failed to save to GitHub" },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({ success: true, slug });
   } catch {
@@ -77,14 +113,21 @@ export async function DELETE(request: NextRequest) {
 
   const { searchParams } = new URL(request.url);
   const slug = searchParams.get("slug");
+  const sha = searchParams.get("sha");
 
-  if (!slug) {
-    return NextResponse.json({ error: "slug is required" }, { status: 400 });
+  if (!slug || !sha) {
+    return NextResponse.json(
+      { error: "slug and sha are required" },
+      { status: 400 }
+    );
   }
 
-  const deleted = deletePost(slug);
-  if (!deleted) {
-    return NextResponse.json({ error: "Post not found" }, { status: 404 });
+  const success = await deleteBlogFile(slug, sha);
+  if (!success) {
+    return NextResponse.json(
+      { error: "Failed to delete from GitHub" },
+      { status: 404 }
+    );
   }
 
   return NextResponse.json({ success: true });
