@@ -1,0 +1,38 @@
+{
+  "nav": {
+    "about": "About",
+    "projects": "Projects",
+    "blog": "Blog"
+  },
+  "hero": {
+    "greeting": "こんにちは、",
+    "name": "らた。",
+    "title": "Full-Stack Developer",
+    "subtitle": "コードで問題を解く。時々、新しい問題も作る。",
+    "scroll": "scroll"
+  },
+  "about": {
+    "heading": "About",
+    "description": "物流システムからブラウザ拡張、株取引ゲームまで——「面白そう」と思ったらとりあえず作ってみるタイプのエンジニアです。TypeScriptが好きで、フロントもバックもElectronも一通り触ります。完璧より完成を大事にしつつ、細部にはちゃんとこだわります。",
+    "skillsHeading": "Tech Stack"
+  },
+  "projects": {
+    "heading": "Projects",
+    "all": "All",
+    "webapp": "Web App",
+    "desktop": "Desktop",
+    "extension": "Extension",
+    "viewCode": "Code",
+    "viewDemo": "Demo"
+  },
+  "blog": {
+    "heading": "Blog",
+    "viewAll": "すべての記事を見る",
+    "comingSoon": "記事を準備中です",
+    "readMore": "続きを読む",
+    "backToList": "記事一覧に戻る"
+  },
+  "footer": {
+    "copyright": "© 2026 rata. Built with curiosity."
+  }
+}

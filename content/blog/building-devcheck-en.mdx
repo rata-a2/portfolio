@@ -1,0 +1,32 @@
+---
+title: "Building DevCheck — Creating Developer Tools with Electron & React"
+description: "From OGP preview to SMTP testing, how I built 7 verification features into a single Electron app."
+date: "2026-02-15"
+tags: ["Electron", "React", "TypeScript"]
+locale: "en"
+---
+
+## Why I Built It
+
+When doing web development, there are so many things to check before deployment. Are the OGP tags correct? Will the emails send? Is the performance acceptable? I got tired of opening different tools every time.
+
+So I figured — why not build an all-in-one tool? That's how DevCheck started.
+
+## Tech Choices
+
+I chose Electron because I wanted everything to run locally. No cloud dependency.
+
+- **Electron + React + TypeScript** — React for UI, TypeScript for type safety
+- **Vite** — Fast HMR even in Electron
+- **Tailwind CSS** — The only styling choice
+- **Zustand** — Lightweight state management
+
+## The Hard Parts
+
+The SMTP test server was the trickiest part. I used the Node.js `smtp-server` package, but getting real-time email display working through Electron's IPC between main and renderer processes took some creative engineering.
+
+The solution: run the SMTP server in the main process and notify the renderer via IPC on each email received.
+
+## What I Learned
+
+"All-in-one" tools are fun but scope management matters. I started with 10 features but trimmed down to 7. Shipping beats perfection.

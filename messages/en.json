@@ -1,0 +1,38 @@
+{
+  "nav": {
+    "about": "About",
+    "projects": "Projects",
+    "blog": "Blog"
+  },
+  "hero": {
+    "greeting": "Hi, I'm",
+    "name": "rata.",
+    "title": "Full-Stack Developer",
+    "subtitle": "I solve problems with code. Sometimes I create new ones.",
+    "scroll": "scroll"
+  },
+  "about": {
+    "heading": "About",
+    "description": "From logistics systems to browser extensions to stock trading games — I'm the kind of engineer who builds it first, asks questions later. I love TypeScript and work across the full stack: frontend, backend, Electron, you name it. I value shipping over perfection, but I sweat the details where it counts.",
+    "skillsHeading": "Tech Stack"
+  },
+  "projects": {
+    "heading": "Projects",
+    "all": "All",
+    "webapp": "Web App",
+    "desktop": "Desktop",
+    "extension": "Extension",
+    "viewCode": "Code",
+    "viewDemo": "Demo"
+  },
+  "blog": {
+    "heading": "Blog",
+    "viewAll": "View all posts",
+    "comingSoon": "Posts coming soon",
+    "readMore": "Read more",
+    "backToList": "Back to all posts"
+  },
+  "footer": {
+    "copyright": "© 2026 rata. Built with curiosity."
+  }
+}
