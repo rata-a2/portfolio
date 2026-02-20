@@ -1,9 +1,18 @@
 {
   "hero": {
-    "greeting": { "ja": "こんにちは、", "en": "Hi, I'm" },
-    "name": { "ja": "らた。", "en": "rata." },
+    "greeting": {
+      "ja": "こんにちは、",
+      "en": "Hi, I'm"
+    },
+    "name": {
+      "ja": "らた。",
+      "en": "rata."
+    },
     "title": "Full-Stack Developer",
-    "subtitle": { "ja": "コードで問題を解く。時々、新しい問題も作る。", "en": "I solve problems with code. Sometimes I create new ones." }
+    "subtitle": {
+      "ja": "コードで問題を解く。時々、新しい問題も作る。",
+      "en": "I solve problems with code. Sometimes I create new ones."
+    }
   },
   "about": {
     "description": {
@@ -11,126 +20,79 @@
       "en": "From logistics systems to browser extensions to stock trading games — I'm the kind of engineer who builds it first, asks questions later. I love TypeScript and work across the full stack: frontend, backend, Electron, you name it. I value shipping over perfection, but I sweat the details where it counts."
     },
     "skills": [
-      { "name": "TypeScript", "level": 9 },
-      { "name": "React", "level": 9 },
-      { "name": "Next.js", "level": 8 },
-      { "name": "Node.js", "level": 8 },
-      { "name": "Express", "level": 8 },
-      { "name": "Electron", "level": 7 },
-      { "name": "Tailwind CSS", "level": 9 },
-      { "name": "PostgreSQL", "level": 7 },
-      { "name": "SQLite", "level": 7 },
-      { "name": "Docker", "level": 6 },
-      { "name": "Python", "level": 5 }
+      {
+        "name": "TypeScript",
+        "level": 9
+      },
+      {
+        "name": "React",
+        "level": 9
+      },
+      {
+        "name": "Next.js",
+        "level": 8
+      },
+      {
+        "name": "Node.js",
+        "level": 8
+      },
+      {
+        "name": "Express",
+        "level": 8
+      },
+      {
+        "name": "Electron",
+        "level": 7
+      },
+      {
+        "name": "Tailwind CSS",
+        "level": 9
+      },
+      {
+        "name": "PostgreSQL",
+        "level": 7
+      },
+      {
+        "name": "SQLite",
+        "level": 7
+      },
+      {
+        "name": "Docker",
+        "level": 6
+      },
+      {
+        "name": "Python",
+        "level": 5
+      }
     ]
   },
   "projects": [
     {
-      "id": "devcheck",
-      "title": { "ja": "DevCheck", "en": "DevCheck" },
-      "description": {
-        "ja": "OGPプレビュー、SMTPテスト、パフォーマンス計測など7つの開発検証機能を搭載したElectronデスクトップアプリ。",
-        "en": "Electron desktop app with 7 dev verification features: OGP preview, SMTP testing, performance profiling, and more."
-      },
-      "tech": ["Electron", "React", "TypeScript", "Tailwind CSS"],
-      "category": "desktop",
-      "github": "https://github.com/rata-a2/DevCheck",
-      "demo": "",
-      "featured": true
-    },
-    {
-      "id": "stock-battle-game",
-      "title": { "ja": "Stock Battle Game", "en": "Stock Battle Game" },
-      "description": {
-        "ja": "友達とリアルタイムで株取引バトル。プライベートルーム、成行・指値注文、グローバルランキング対応。",
-        "en": "Competitive stock trading game with private rooms, market/limit orders, and global rankings."
-      },
-      "tech": ["React", "Express", "PostgreSQL", "Prisma", "WebSocket"],
-      "category": "webapp",
-      "github": "https://github.com/rata-a2/stock-battle-game",
-      "demo": "",
-      "featured": true
-    },
-    {
-      "id": "pubcom-viewer",
-      "title": { "ja": "パブコメわかりやすく", "en": "PubCom Viewer" },
-      "description": {
-        "ja": "パブリックコメントをAIで要約し、メルマガ・LINE・X(Twitter)で自動配信するプラットフォーム。",
-        "en": "AI-powered public comment summarizer with multi-channel distribution via email, LINE, and X."
-      },
-      "tech": ["Next.js", "React 19", "Gemini AI", "LINE Bot", "Twitter API"],
-      "category": "webapp",
-      "github": "",
-      "demo": "",
-      "featured": true
-    },
-    {
-      "id": "devlog-ai",
-      "title": { "ja": "DevLog AI", "en": "DevLog AI" },
-      "description": {
-        "ja": "AI開発時のエラー履歴を自動記録するChrome拡張 + Web管理画面。モノレポ構成。",
-        "en": "Chrome extension + web dashboard for tracking AI development error history. Monorepo architecture."
-      },
-      "tech": ["Chrome Extension", "Next.js", "Supabase", "TypeScript"],
-      "category": "extension",
-      "github": "",
-      "demo": "",
-      "featured": true
-    },
-    {
-      "id": "truck-dispatch",
-      "title": { "ja": "配車システム", "en": "Truck Dispatch System" },
-      "description": {
-        "ja": "Google Maps連携の配車最適化システム。ALNS最適化アルゴリズムでルート計算。Docker対応。",
-        "en": "Dispatch optimization system with Google Maps integration. ALNS algorithm for route calculation."
-      },
-      "tech": ["React", "Express", "Google Maps", "Docker", "SQLite"],
-      "category": "webapp",
-      "github": "",
-      "demo": "",
-      "featured": true
-    },
-    {
-      "id": "chatwork-enhanced-pro",
-      "title": { "ja": "Chatwork Enhanced Pro", "en": "Chatwork Enhanced Pro" },
-      "description": {
-        "ja": "Chatworkの生産性を上げるChrome拡張。ルームリサイズ、テンプレート、シンタックスハイライト。",
-        "en": "Chrome extension to boost Chatwork productivity. Room resizing, templates, syntax highlighting."
-      },
-      "tech": ["Chrome Extension", "JavaScript", "Manifest V3"],
-      "category": "extension",
-      "github": "",
-      "demo": "",
-      "featured": false
-    },
-    {
       "id": "japanese-stock-pro",
-      "title": { "ja": "Japanese Stock Pro", "en": "Japanese Stock Pro" },
+      "title": {
+        "ja": "Japanese Stock Pro",
+        "en": "Japanese Stock Pro"
+      },
       "description": {
         "ja": "日本株の投資分析Webアプリ。リアルタイムチャート、銘柄スクリーニング機能搭載。",
         "en": "Investment analysis web app for Japanese stocks with real-time charts and screening features."
       },
-      "tech": ["Next.js", "TypeScript", "Recharts", "Yahoo Finance"],
+      "tech": [
+        "Next.js",
+        "TypeScript",
+        "Recharts",
+        "Yahoo Finance"
+      ],
       "category": "webapp",
-      "github": "",
-      "demo": "",
-      "featured": false
-    },
-    {
-      "id": "password-generator",
-      "title": { "ja": "Password Generator", "en": "Password Generator" },
-      "description": {
-        "ja": "安全なパスワードを自動生成・管理するChrome拡張機能。",
-        "en": "Chrome extension for generating and managing secure passwords."
-      },
-      "tech": ["Chrome Extension", "JavaScript", "Manifest V3"],
-      "category": "extension",
-      "github": "",
-      "demo": "",
-      "featured": false
+      "github": "https://github.com/rata-a2/japanese-stock-pro",
+      "demo": "https://japanese-stock-pro.vercel.app/",
+      "featured": true
     }
   ],
   "footer": {
-    "copyright": { "ja": "© 2026 rata. Built with curiosity.", "en": "© 2026 rata. Built with curiosity." }
+    "copyright": {
+      "ja": "© 2026 rata. Built with curiosity.",
+      "en": "© 2026 rata. Built with curiosity."
+    }
   }
 }
